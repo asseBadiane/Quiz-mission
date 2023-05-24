@@ -1,12 +1,12 @@
 import json
-
+import sys
 class Question:
     def __init__(self, titre, choix, bonne_reponse):
         self.titre = titre
         self.choix = choix
         self.bonne_reponse = bonne_reponse
 
-    def form_json_data(data):
+    def from_json_data(data):
         titre = data['titre']
         choix = [i[0] for i in data['choix']]
         bonne_reponse = [i[0] for i in data['choix'] if i[1]] 
@@ -51,11 +51,21 @@ class Questionnaire:
         self.titre = titre
         self.difficulte = difficulte
 
-    def form_data_json(data):
+    def from_data_json(data):
         questionnaire_data = data['questions']
         # print(questionnaire_data[0])
-        questions = [Question.form_json_data(x) for x in questionnaire_data]
+        questions = [Question.from_json_data(x) for x in questionnaire_data]
         return Questionnaire(questions, data['categorie'], data['titre'], data['difficulte'])
+
+    def from_file_json(fileName):
+        # fileName = "animaux_leschats_debutant.json"
+        file = open(fileName, "r")
+
+        jsonData = file.read()
+        file.close()
+        questionnaire_data_json = json.loads(jsonData)
+        return Questionnaire.from_data_json(questionnaire_data_json)
+
 
     def lancer(self):
         print("             ********* QUESTIONNAIRE **********")
@@ -75,36 +85,22 @@ class Questionnaire:
         return score
 
 
-"""questionnaire = (
-    ("Quelle est la capitale de la France ?", ("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris"), 
-    ("Quelle est la capitale de l'Italie ?", ("Rome", "Venise", "Pise", "Florence"), "Rome"),
-    ("Quelle est la capitale de la Belgique ?", ("Anvers", "Bruxelles", "Bruges", "Liège"), "Bruxelles")
-                )
-
-lancer_questionnaire(questionnaire)"""
-
-# q1 = Question("Quelle est la capitale de la France ?", ("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris")
-# q1.poser()
-
-# data = (("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris", "Quelle est la capitale de la France ?")
-# q = Question.FromData(data)
-# print(q.__dict__)
-
-# Questionnaire(
-#     (
-#     Question("Quelle est la capitale de la France ?", ("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris"), 
-#     Question("Quelle est la capitale de l'Italie ?", ("Rome", "Venise", "Pise", "Florence"), "Rome"),
-#     Question("Quelle est la capitale de la Belgique ?", ("Anvers", "Bruxelles", "Bruges", "Liège"), "Bruxelles")
-#     )
-# ).lancer()
+# commande = input("Votre commande de ton fichier:")
+# resultat = subprocess.run(f"python + {commande}", shell=True)
 
 
-fileName = "animaux_leschats_debutant.json"
-file = open(fileName, "r")
+print(sys.argv)
+if len(sys.argv) < 2:
+   print("ERREUR : Vous devez indiquer le nom du fichier à charger")
+   exit(0)
 
-jsonData = file.read()
-file.close()
+fileName = sys.argv[1]
 
-questionnaire_data_json = json.loads(jsonData)
+questionnaire = Questionnaire.from_file_json(fileName)
+if questionnaire:
+   questionnaire.lancer()
 
-Questionnaire.form_data_json(questionnaire_data_json).lancer()
+
+# Questionnaire.from_file_json("animaux_leschats_debutant.json").lancer()
+
+
