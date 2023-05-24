@@ -6,7 +6,7 @@ class Question:
         self.choix = choix
         self.bonne_reponse = bonne_reponse
 
-    def FromJsonData(data):
+    def form_json_data(data):
         titre = data['titre']
         choix = [i[0] for i in data['choix']]
         bonne_reponse = [i[0] for i in data['choix'] if i[1]] 
@@ -14,8 +14,8 @@ class Question:
 
         return q
 
-    def poser(self):
-        print("QUESTION")
+    def poser(self, nm_question, nb_question):
+        print(f"QUESTION {nm_question} / {nb_question}")
         print("  " + self.titre)
         for i in range(len(self.choix)):
             print("  ", i+1, "-", self.choix[i])
@@ -45,14 +45,32 @@ class Question:
         return Question.demander_reponse_numerique_utlisateur(min, max)
     
 class Questionnaire:
-    def __init__(self, questions):
+    def __init__(self, questions, categorie, titre, difficulte):
         self.questions = questions
+        self.categorie = categorie
+        self.titre = titre
+        self.difficulte = difficulte
+
+    def form_data_json(data):
+        questionnaire_data = data['questions']
+        # print(questionnaire_data[0])
+        questions = [Question.form_json_data(x) for x in questionnaire_data]
+        return Questionnaire(questions, data['categorie'], data['titre'], data['difficulte'])
 
     def lancer(self):
+        print("             ********* QUESTIONNAIRE **********")
+        print(f"- Categorie : {self.categorie}")
+        print(f"- Titre : {self.titre}")
+        print(f"- Difficulte : {self.difficulte}")
+        print("      *****  ***    *****")
         score = 0
-        for question in self.questions:
-            if question.poser():
+        nb_question = len(self.questions)
+        for i in range(nb_question):
+            # print(f"QUESTION: {nb_question}")
+            questions = self.questions[i]
+            if questions.poser(i+1, nb_question):
                 score += 1
+            # nb_question += 1
         print("Score final :", score, "sur", len(self.questions))
         return score
 
@@ -88,7 +106,5 @@ jsonData = file.read()
 file.close()
 
 questionnaire_data_json = json.loads(jsonData)
-questionnaire_data = questionnaire_data_json['questions']
-# print(questionnaire_data[0])
-q = Question.FromJsonData(questionnaire_data[0])
-q.poser()
+
+Questionnaire.form_data_json(questionnaire_data_json).lancer()
