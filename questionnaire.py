@@ -10,6 +10,8 @@ class Question:
         titre = data['titre']
         choix = [i[0] for i in data['choix']]
         bonne_reponse = [i[0] for i in data['choix'] if i[1]] 
+        if len(bonne_reponse) != 1:
+           return None
         q = Question(titre, choix, bonne_reponse[0])
 
         return q
@@ -55,15 +57,20 @@ class Questionnaire:
         questionnaire_data = data['questions']
         # print(questionnaire_data[0])
         questions = [Question.from_json_data(x) for x in questionnaire_data]
+        questions = [i for i in questions if i]
         return Questionnaire(questions, data['categorie'], data['titre'], data['difficulte'])
 
     def from_file_json(fileName):
         # fileName = "animaux_leschats_debutant.json"
-        file = open(fileName, "r")
+        try:
+            file = open(fileName, "r")
 
-        jsonData = file.read()
-        file.close()
-        questionnaire_data_json = json.loads(jsonData)
+            jsonData = file.read()
+            file.close()
+            questionnaire_data_json = json.loads(jsonData)
+        except:
+            print("Exception lors de l'ouverture ou la lecture du fichier")
+            return None
         return Questionnaire.from_data_json(questionnaire_data_json)
 
 
@@ -83,11 +90,7 @@ class Questionnaire:
             # nb_question += 1
         print("Score final :", score, "sur", len(self.questions))
         return score
-
-
-# commande = input("Votre commande de ton fichier:")
-# resultat = subprocess.run(f"python + {commande}", shell=True)
-
+    
 
 print(sys.argv)
 if len(sys.argv) < 2:
