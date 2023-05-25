@@ -91,17 +91,17 @@ class Questionnaire:
         print("Score final :", score, "sur", len(self.questions))
         return score
     
+if __name__ == "__main__":
+    print(sys.argv)
+    if len(sys.argv) < 2:
+        print("ERREUR : Vous devez indiquer le nom du fichier à charger")
+        exit(0)
 
-print(sys.argv)
-if len(sys.argv) < 2:
-   print("ERREUR : Vous devez indiquer le nom du fichier à charger")
-   exit(0)
+    fileName = sys.argv[1]
 
-fileName = sys.argv[1]
-
-questionnaire = Questionnaire.from_file_json(fileName)
-if questionnaire:
-   questionnaire.lancer()
+    questionnaire = Questionnaire.from_file_json(fileName)
+    if questionnaire:
+       questionnaire.lancer()
 
 
 # Questionnaire.from_file_json("animaux_leschats_debutant.json").lancer()

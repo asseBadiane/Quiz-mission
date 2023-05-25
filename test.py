@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch
+import questionnaire
 
 def additionner(a, b):
     return a+b
@@ -32,9 +33,25 @@ class TestsUnitaireDemo(unittest.TestCase):
         with patch('builtins.input', return_value="55"):
             self.assertEqual(conversion_number(), 55)
 
-    def test_conversion_entrer_valide(self):
+    def test_conversion_entrer_invalide(self):
         print("Les conversions enter valides")
-        with patch('builtins.input', return_value='vrs<ssff'):
+        with patch('builtins.input', return_value='jgdhddx'):
             self.assertRaises(ValueError, conversion_number)    
+
+
+class TestsQuestions(unittest.TestCase):
+    def test_question_bonne_or_mauvaise_reponse(self):
+        choix = ('choix1', 'choix2', 'choix3')
+        
+        q = questionnaire.Question("Titre", choix, "choix2")
+        
+        with patch('builtins.input', return_value="1"):
+            self.assertFalse(q.poser(1, 1))
+        with patch('builtins.input', return_value="2"):
+            self.assertTrue(q.poser(1, 1))
+        with patch('builtins.input', return_value="3"):
+            self.assertFalse(q.poser(1, 1))
+        
+        
 
 unittest.main()
