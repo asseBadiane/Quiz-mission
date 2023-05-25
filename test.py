@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
 import questionnaire
+import os
 
 def additionner(a, b):
     return a+b
@@ -41,17 +42,30 @@ class TestsUnitaireDemo(unittest.TestCase):
 
 class TestsQuestions(unittest.TestCase):
     def test_question_bonne_or_mauvaise_reponse(self):
-        choix = ('choix1', 'choix2', 'choix3')
-        
+        choix = ('choix1', 'choix2', 'choix3') 
         q = questionnaire.Question("Titre", choix, "choix2")
-        
         with patch('builtins.input', return_value="1"):
             self.assertFalse(q.poser(1, 1))
         with patch('builtins.input', return_value="2"):
             self.assertTrue(q.poser(1, 1))
         with patch('builtins.input', return_value="3"):
             self.assertFalse(q.poser(1, 1))
-        
+
+class TestQuestionnaire(unittest.TestCase):
+    def test_questionnaire_lancer_leschats_debutants(self):
+        fileName = os.path.join('test', 'animaux_leschats_debutant.json')
+        q = questionnaire.Questionnaire.from_file_json(fileName)
+        self.assertIsNotNone(q)
+        # q.lancer()
+        # q.categories()
+       
+        self.assertEqual(len(q.questions), 10) # Test le nombre de questions
+        self.assertEqual(q.titre, "Les chats") # Test est ce que le titre est bien afficher
+        self.assertTrue(q.categorie, "Animaux") # Test est ce que la categorie est bien afficher
+        self.assertTrue(q.difficulte, "Débutant") # Test est ce que la difficulte est bien afficher
+        with patch('builtins.input', return_value="3"): # Test est ce que le questionnaire est bien lancer 
+            self.assertEqual(q.lancer(), 5)
+
         
 
 unittest.main()
