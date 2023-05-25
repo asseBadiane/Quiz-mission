@@ -2,6 +2,9 @@ import unittest
 from unittest.mock import patch
 import questionnaire
 import os
+import questionnaire_import
+import json
+
 
 def additionner(a, b):
     return a+b
@@ -72,16 +75,58 @@ class TestQuestionnaire(unittest.TestCase):
         self.assertIsNotNone(q)
         self.assertEqual(q.categorie, "Inconnue")
         self.assertEqual(q.difficulte, "Inconnue")
-        self.assertEqual(q.questions)
+        self.assertIsNotNone(q.questions)
 
         fileName = os.path.join('test', 'animaux_pas_de_questions.json')
         q = questionnaire.Questionnaire.from_file_json(fileName)
-        self.assertIsNotNone(q)
+        self.assertIsNone(q)
+        
 
         fileName = os.path.join('test', 'animaux_pas_de_titre.json')
         q = questionnaire.Questionnaire.from_file_json(fileName)
-        self.assertIsNotNone(q)
+        self.assertIsNone(q)
+        
+
+class TestQuestionnaire_import(unittest.TestCase):
+    def test_import_format_json(self):
+        questionnaire_import.generate_json_file("Animaux", "Les chats", "https://www.codeavecjonathan.com/res/mission/openquizzdb_50.json")
+        fileNames = ("animaux_leschats_debutant.json", "animaux_leschats_confirme.json", "animaux_leschats_expert.json")
+        for fileName in fileNames:
+            self.assertTrue(os.path.isfile(fileName))
+            file = open(fileName, "r")
+            json_data = file.read()
+            file.close()
+            try:
+                data = json.loads(json_data)
+            except:
+                self.fail("Problème de déserialisation pour le fichier " + fileName) 
+
+        self.assertIsNotNone(data.get("titre"))
+        self.assertIsNotNone(data.get("categorie"))
+        self.assertIsNotNone(data.get("difficulte"))
+        self.assertIsNotNone(data.get("questions"))
 
         
+        for question in data.get("questions"):
+            self.assertIsNotNone(question.get("titre"))
+            self.assertIsNotNone(question.get("choix"))
+            for choix in question.get("choix"):
+                self.assertGreater(len(choix[0]), 0)
+                self.assertTrue(isinstance(choix[1], bool))
+            bonne_reponse = [i[0] for i in question.get('choix') if i[1]]
+            self.assertTrue(len(bonne_reponse), 1)
+
+list
+
+            # self.assertTrue(question['titre']) 
+            # self.assertGreater(len(question['titre']) , 0)
+            # self.assertTrue(question['choix'])
+            # self.assertGreater(len(question['choix']), 2)
+            # self.assertTrue(isinstance(question['choix'][1], bool))
+            # self.assertGreater(len(question['choix'][1]), 1)
+
+        
+        
+
 
 unittest.main()

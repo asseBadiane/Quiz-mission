@@ -54,10 +54,19 @@ class Questionnaire:
         self.difficulte = difficulte
 
     def from_data_json(data):
+        if not data.get("questions"):
+            return None
         questionnaire_data = data['questions']
         # print(questionnaire_data[0])
         questions = [Question.from_json_data(x) for x in questionnaire_data]
         questions = [i for i in questions if i]
+     
+        if not data.get('titre'):
+            return None
+        if not data.get('categorie'):
+            data['categorie'] = "Inconnue"
+        if not data.get('difficulte'):
+            data['difficulte'] = "Inconnue"
         return Questionnaire(questions, data['categorie'], data['titre'], data['difficulte'])
 
     def from_file_json(fileName):
