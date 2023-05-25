@@ -65,6 +65,22 @@ class TestQuestionnaire(unittest.TestCase):
         self.assertTrue(q.difficulte, "Débutant") # Test est ce que la difficulte est bien afficher
         with patch('builtins.input', return_value="3"): # Test est ce que le questionnaire est bien lancer 
             self.assertEqual(q.lancer(), 5)
+    
+    def test_questionnaire_format_invalide(self):
+        fileName = os.path.join('test', 'animaux_pas_de_categorie_and_difficulte.json')
+        q = questionnaire.Questionnaire.from_file_json(fileName)
+        self.assertIsNotNone(q)
+        self.assertEqual(q.categorie, "Inconnue")
+        self.assertEqual(q.difficulte, "Inconnue")
+        self.assertEqual(q.questions)
+
+        fileName = os.path.join('test', 'animaux_pas_de_questions.json')
+        q = questionnaire.Questionnaire.from_file_json(fileName)
+        self.assertIsNotNone(q)
+
+        fileName = os.path.join('test', 'animaux_pas_de_titre.json')
+        q = questionnaire.Questionnaire.from_file_json(fileName)
+        self.assertIsNotNone(q)
 
         
 
