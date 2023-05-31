@@ -56,6 +56,7 @@ class Questionnaire:
     def from_data_json(data):
         if not data.get("questions"):
             return None
+        
         questionnaire_data = data['questions']
         # print(questionnaire_data[0])
         questions = [Question.from_json_data(x) for x in questionnaire_data]
@@ -73,7 +74,6 @@ class Questionnaire:
         # fileName = "animaux_leschats_debutant.json"
         try:
             file = open(fileName, "r")
-
             jsonData = file.read()
             file.close()
             questionnaire_data_json = json.loads(jsonData)

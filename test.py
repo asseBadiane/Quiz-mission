@@ -116,8 +116,6 @@ class TestQuestionnaire_import(unittest.TestCase):
             bonne_reponse = [i[0] for i in question.get('choix') if i[1]]
             self.assertTrue(len(bonne_reponse), 1)
 
-list
-
             # self.assertTrue(question['titre']) 
             # self.assertGreater(len(question['titre']) , 0)
             # self.assertTrue(question['choix'])
